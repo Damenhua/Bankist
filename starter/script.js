@@ -62,10 +62,10 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 //displayMovement
-const displayMovement = function (movement) {
+const displayMovement = function (acc) {
   containerMovements.innerHTML = '';
 
-  movement.forEach(function (n, i) {
+  acc.movements.forEach(function (n, i) {
     const type = n > 0 ? 'deposit' : 'withdrawal';
     const html = `
        <div class="movements__row">
@@ -79,36 +79,32 @@ const displayMovement = function (movement) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovement(account1.movements);
 
 //calcuDisplayBalance
 const calcuDisplayBalance = function (acc) {
-  const balance = acc.movements.reduce((total, curr) => (total += curr), 0);
-  labelBalance.textContent = `${balance} EUR`;
+  acc.balance = acc.movements.reduce((total, curr) => (total += curr), 0);
+  labelBalance.textContent = `${acc.balance} €`;
 };
-calcuDisplayBalance(account1);
 
 // calculateDisplaySum
 const calculateDisplaySum = function (acc) {
-  const dipositsum = acc
+  const dipositsum = acc.movements
     .filter(n => n > 0)
     .reduce((total, curr) => total + curr, 0);
   labelSumIn.textContent = `${dipositsum}€`;
 
-  const withdrawalSum = acc
+  const withdrawalSum = acc.movements
     .filter(n => n < 0)
     .reduce((total, curr) => total + curr, 0);
   labelSumOut.textContent = `${withdrawalSum}€`;
 
-  const interestSum = acc
+  const interestSum = acc.movements
     .filter(n => n > 0)
-    .map(n => (n * 1.2) / 100)
+    .map(n => (n * acc.interestRate) / 100)
     .filter(n => n >= 1)
     .reduce((total, curr) => total + curr, 0);
   labelSumInterest.textContent = `${interestSum}€`;
 };
-
-calculateDisplaySum(account1.movements);
 
 //creatUserName
 const creatUserName = function (acc) {
@@ -122,6 +118,55 @@ const creatUserName = function (acc) {
 };
 creatUserName(accounts);
 
+// updateUI
+const updateUI = function (accounts) {
+  displayMovement(accounts);
+  calcuDisplayBalance(accounts);
+  calculateDisplaySum(accounts);
+};
+
+// Log in Handler
+let currentAccount;
+btnLogin.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  currentAccount = accounts.find(
+    acc => acc.userName === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    console.log('LOG');
+    // show UI and Welcome message
+    labelWelcome.textContent = `Welcome back ${currentAccount.owner}`;
+    containerApp.style.opacity = 100;
+    // update balance, movements,summary
+  }
+  inputLoginPin.value = '';
+  inputLoginUsername.value = '';
+  inputLoginPin.blur();
+  updateUI(currentAccount);
+});
+
+// TransferHandler
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputTransferAmount.value);
+  const receiverAcc = accounts.find(a => a.userName === inputTransferTo.value);
+  console.log(amount, receiverAcc);
+  if (
+    amount > 0 &&
+    receiverAcc &&
+    currentAccount.balance >= amount &&
+    receiverAcc.userName !== currentAccount.userName
+  ) {
+    // doing the transfer
+    console.log('receiving...');
+    currentAccount.movements.push(-amount);
+    receiverAcc.movements.push(amount);
+    updateUI();
+  }
+});
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
