@@ -88,6 +88,28 @@ const calcuDisplayBalance = function (acc) {
 };
 calcuDisplayBalance(account1);
 
+// calculateDisplaySum
+const calculateDisplaySum = function (acc) {
+  const dipositsum = acc
+    .filter(n => n > 0)
+    .reduce((total, curr) => total + curr, 0);
+  labelSumIn.textContent = `${dipositsum}€`;
+
+  const withdrawalSum = acc
+    .filter(n => n < 0)
+    .reduce((total, curr) => total + curr, 0);
+  labelSumOut.textContent = `${withdrawalSum}€`;
+
+  const interestSum = acc
+    .filter(n => n > 0)
+    .map(n => (n * 1.2) / 100)
+    .filter(n => n >= 1)
+    .reduce((total, curr) => total + curr, 0);
+  labelSumInterest.textContent = `${interestSum}€`;
+};
+
+calculateDisplaySum(account1.movements);
+
 //creatUserName
 const creatUserName = function (acc) {
   acc.forEach(function (name) {
