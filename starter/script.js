@@ -61,6 +61,7 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+//displayMovement
 const displayMovement = function (movement) {
   containerMovements.innerHTML = '';
 
@@ -78,8 +79,27 @@ const displayMovement = function (movement) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-
 displayMovement(account1.movements);
+
+//calcuDisplayBalance
+const calcuDisplayBalance = function (acc) {
+  const balance = acc.movements.reduce((total, curr) => (total += curr), 0);
+  labelBalance.textContent = `${balance} EUR`;
+};
+calcuDisplayBalance(account1);
+
+//creatUserName
+const creatUserName = function (acc) {
+  acc.forEach(function (name) {
+    name.userName = name.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+creatUserName(accounts);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -91,5 +111,8 @@ const currencies = new Map([
 ]);
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+const eurToUsd = 1.1;
+const toUsdfunc = movements.map(i => i * eurToUsd);
 
 /////////////////////////////////////////////////
