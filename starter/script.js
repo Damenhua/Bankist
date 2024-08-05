@@ -65,7 +65,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 const displayMovement = function (acc) {
   containerMovements.innerHTML = '';
 
-  acc.movements.forEach(function (n, i) {
+  acc.forEach(function (n, i) {
     const type = n > 0 ? 'deposit' : 'withdrawal';
     const html = `
        <div class="movements__row">
@@ -120,7 +120,7 @@ creatUserName(accounts);
 
 // updateUI
 const updateUI = function (acc) {
-  displayMovement(acc);
+  displayMovement(acc.movements);
   calcuDisplayBalance(acc);
   calculateDisplaySum(acc);
 };
@@ -199,10 +199,15 @@ btnClose.addEventListener('click', function (e) {
   }
 });
 
-// sort
+// sort three state
+let sortOrder = 0;
 btnSort.addEventListener('click', function () {
-  currentAccount.movements.reverse();
-  updateUI(currentAccount);
+  const originMov = currentAccount.movements;
+  const sortMov = originMov
+    .slice()
+    .sort((a, b) => (sortOrder === 0 ? a - b : sortOrder === 1 ? b - a : 0));
+  displayMovement(sortOrder === 2 ? originMov : sortMov);
+  sortOrder = (sortOrder + 1) % 3;
 });
 
 /////////////////////////////////////////////////
