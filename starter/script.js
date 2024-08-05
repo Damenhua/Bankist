@@ -119,10 +119,10 @@ const creatUserName = function (acc) {
 creatUserName(accounts);
 
 // updateUI
-const updateUI = function (accounts) {
-  displayMovement(accounts);
-  calcuDisplayBalance(accounts);
-  calculateDisplaySum(accounts);
+const updateUI = function (acc) {
+  displayMovement(acc);
+  calcuDisplayBalance(acc);
+  calculateDisplaySum(acc);
 };
 
 // Log in Handler
@@ -164,9 +164,47 @@ btnTransfer.addEventListener('click', function (e) {
     console.log('receiving...');
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
-    updateUI();
+    updateUI(currentAccount);
+    // empty input
+    inputTransferAmount.value = '';
+    inputTransferTo.value = '';
   }
 });
+
+// Request loan
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(n => n >= amount * 0.1)) {
+    currentAccount.movements.push(amount);
+    updateUI(currentAccount);
+  }
+
+  // empty input
+  inputLoanAmount.value = '';
+});
+
+//Close account(delete)
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+  const index = accounts.findIndex(a => a.userName === currentAccount.userName);
+  console.log(index);
+
+  if (
+    inputCloseUsername.value === currentAccount.userName &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+  }
+});
+
+// sort
+btnSort.addEventListener('click', function () {
+  currentAccount.movements.reverse();
+  updateUI(currentAccount);
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
