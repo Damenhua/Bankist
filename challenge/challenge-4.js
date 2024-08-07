@@ -13,7 +13,7 @@ const Sarah = dogs.find((n) => n.owners.includes("Sarah"));
 const SarahDogFood =
   Sarah.curFood > Sarah.recFood * 1.1
     ? "too much"
-    : Sarah.curFood < Sarah.recFood * 1.1
+    : Sarah.curFood < Sarah.recFood * 0.9
     ? "too little"
     : "Great!";
 console.log(Sarah);
